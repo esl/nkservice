@@ -176,8 +176,8 @@ handle_call({call, Fun, Args}, _From, #state{luerl=Luerl}=State) ->
         {Val, Luerl2} ->
             {reply, {ok, Val}, State#state{luerl=Luerl2}}
     catch
-        Class:Error ->
-            Reply = {error, {Class, {Error, erlang:get_stacktrace()}}},
+        Class:Error:Stacktrace ->
+            Reply = {error, {Class, {Error, Stacktrace}}},
             {reply, Reply, State}
     end;
 
@@ -186,8 +186,8 @@ handle_call({get_table, Name}, _From, #state{luerl=Luerl}=State) ->
         {Val, _} ->
             {reply, {ok, Val}, State}
     catch
-        Class:Error ->
-            Reply = {error, {Class, {Error, erlang:get_stacktrace()}}},
+        Class:Error:Stacktrace ->
+            Reply = {error, {Class, {Error, Stacktrace}}},
             {reply, Reply, State}
     end;
 
@@ -196,8 +196,8 @@ handle_call({set_table, Name, Value}, _From, #state{luerl=Luerl}=State) ->
         Luerl2 ->
             {reply, ok, State#state{luerl=Luerl2}}
     catch
-        Class:Error ->
-            Reply = {error, {Class, {Error, erlang:get_stacktrace()}}},
+        Class:Error:Stacktrace ->
+            Reply = {error, {Class, {Error, Stacktrace}}},
             {reply, Reply, State}
     end;
 
@@ -211,8 +211,8 @@ handle_call({kv_get, Key}, _From, #state{srv_id=SrvId, luerl=Luerl}=State) ->
                 ErlVal ->
                     {reply, {ok, ErlVal}, State}
             catch
-                Class:Error ->
-                    Reply = {error, {Class, {Error, erlang:get_stacktrace()}}},
+                Class:Error:Stacktrace ->
+                    Reply = {error, {Class, {Error, Stacktrace}}},
                     {reply, Reply, State}
             end
     end;
