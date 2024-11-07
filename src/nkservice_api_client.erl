@@ -30,7 +30,7 @@
 
 
 -define(LLOG(Type, Txt, Args, State),
-    lager:Type("NkSERVICE API Client (~s) "++Txt, [State#state.remote| Args])).
+    logger:Type("NkSERVICE API Client (~s) "++Txt, [State#state.remote| Args])).
 
 -define(PRINT(Txt, Args, State), 
         % print(Txt, Args, State),    % Comment this
@@ -242,7 +242,7 @@ conn_parse({text, Text}, NkPort, #state{srv_id=SrvId}=State) ->
 conn_encode(Msg, _NkPort) when is_map(Msg) ->
     case nklib_json:encode(Msg) of
         error ->
-            lager:warning("invalid json in ~p: ~p", [?MODULE, Msg]),
+            logger:warning("invalid json in ~p: ~p", [?MODULE, Msg]),
             {error, invalid_json};
         Json ->
             {ok, {text, Json}}

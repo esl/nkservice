@@ -58,8 +58,8 @@ launch(#api_req{srv_id=SrvId, data=Data}=Req, State) ->
         defaults => Defaults,
         mandatory => Mandatory
     },
-    % lager:info("Syntax for ~p: ~p, ~p ~p", 
-    %             [lager:pr(Req, ?MODULE), Syntax, Defaults, Mandatory]),
+    % logger:info("Syntax for ~p: ~p, ~p ~p", 
+    %             [Req, Syntax, Defaults, Mandatory]),
     case nklib_config:parse_config(Data, Syntax, Opts) of
         {ok, Parsed, Other} ->
             Req2 = Req#api_req{data=Parsed},
@@ -97,7 +97,7 @@ send_unrecognized_fields(Req, Fields) ->
         body = #{class=>Class, subclass=>Sub, cmd=>Cmd, fields=>Fields}
     },
     nkservice_events:send(Event),
-    lager:notice("NkSERVICE API: Unknown keys in service launch "
+    logger:notice("NkSERVICE API: Unknown keys in service launch "
                  "~s:~s:~s: ~p", [Class, Sub, Cmd, Fields]).
 
 
@@ -141,7 +141,7 @@ cmd(<<"event">>, <<"subscribe">>, #api_req{srv_id=SrvId, data=Data}, State) ->
         obj_id = ObjId,
         body = maps:get(body, Data, #{})
     },
-    % lager:warning("SUBS: ~p, ~p", [SrvId, Event]),
+    % logger:warning("SUBS: ~p, ~p", [SrvId, Event]),
     case SrvId:api_subscribe_allow(EvSrvId, Class, Sub, Type, State) of
         {true, State2} ->
             nkservice_api_server:register_event(self(), Event),
@@ -228,7 +228,7 @@ cmd(<<"session">>, <<"cmd">>, #api_req{data=Data, tid=TId}, State) ->
                             nkservice_api_server:reply_error(Self, TId, {Code, Error});
                         {ok, Res, _ResData} ->
                             Ref = nklib_util:uid(),
-                            lager:error("Internal error ~s: Invalid reply: ~p", 
+                            logger:error("Internal error ~s: Invalid reply: ~p", 
                                         [Ref, Res]),
                             nkservice_api_server:reply_error(Self, TId, 
                                                              {internal_error, Ref});
@@ -243,7 +243,7 @@ cmd(<<"session">>, <<"cmd">>, #api_req{data=Data, tid=TId}, State) ->
 
 cmd(<<"session">>, <<"log">>, Req, State) ->
     Msg = get_log_msg(Req),
-    lager:info("Ext API Session Log: ~p", [Msg]),
+    logger:info("Ext API Session Log: ~p", [Msg]),
     {ok, #{}, State};
 
 cmd(_Sub, Cmd, _Data, State) ->

@@ -84,7 +84,7 @@ config_plugins([], Service) ->
     Service;
 
 config_plugins([Plugin|Rest], #{config:=Config}=Service) ->
-    % lager:warning("Config Plugin: ~p", [Plugin]),
+    % logger:warning("Config Plugin: ~p", [Plugin]),
     Mod = get_mod(Plugin),
     Config2 = case nklib_util:apply(Mod, plugin_syntax, []) of
         not_exported -> 
@@ -147,14 +147,14 @@ start_plugins([Plugin|Rest], OldPlugins, #{config:=Config}=Service) ->
     Mod = get_mod(Plugin),
     Service2 = case lists:member(Plugin, OldPlugins) of
         false ->
-            % lager:warning("Start Plugin: ~p", [Plugin]),
+            % logger:warning("Start Plugin: ~p", [Plugin]),
             case nklib_util:apply(Mod, plugin_start, [Config, Service]) of
                 {ok, Config2} -> Service#{config:=Config2};
                 {stop, Error} -> throw({plugin_stop, {Plugin, Error}});
                 not_exported -> Service
             end;
         true ->
-            % lager:warning("Update Plugin: ~p", [Plugin]),
+            % logger:warning("Update Plugin: ~p", [Plugin]),
             case nklib_util:apply(Mod, plugin_update, [Config, Service]) of
                 {ok, Config2} -> Service#{config:=Config2};
                 {stop, Error} -> throw({plugin_stop, {Plugin, Error}});
@@ -169,7 +169,7 @@ stop_plugins([], Service) ->
     Service;
 
 stop_plugins([Plugin|Rest], Service) ->
-    % lager:warning("Stop Plugin: ~p", [Plugin]),
+    % logger:warning("Stop Plugin: ~p", [Plugin]),
     #{config:=Config, listen:=Listen, listen_ids:=ListenIds} = Service,
     Listen2 = maps:remove(Plugin, Listen),
     case maps:find(Plugin, ListenIds) of
@@ -226,7 +226,7 @@ expand_plugins(ModuleList, CallBack) ->
         end,
         List2 = add_group_deps(List1),
         List3 = add_all_deps(List2, []),
-        % lager:warning("LIST: ~p", [List3]),
+        % logger:warning("LIST: ~p", [List3]),
         case nklib_sort:top_sort(List3) of
             {ok, Sorted} -> {ok, Sorted};
             {error, Error} -> {error, Error}
@@ -330,7 +330,7 @@ set_luerl(#{config:=Config}=Service) ->
                         {ok, Bin} ->
                             set_luerl_start(Bin, Service);
                         {error, Error} ->
-                            lager:warning("Could not read file ~s", [Script3]),
+                            logger:warning("Could not read file ~s", [Script3]),
                             throw({script_read_error, Error, Script3})
                     end
             end;
@@ -360,8 +360,8 @@ set_luerl_start(Script, #{lua_modules:=Modules}=Service) ->
             % io:format("R2A: ~p\n", [State2#luerl.g]),
             % io:format("R2: ~p\n", [luerl_emul:get_table_keys({tref, 4}, State2)]),
             % io:format("R2: ~p\n", [luerl:get_table1([<<"package">>], State2)]),
-            % io:format("R2: ~p\n", [lager:pr(State2, ?MODULE)]),
-            % lager:warning("R3: ~p", [luerl:decode_list(R, State2)]),
+            % io:format("R2: ~p\n", [State2]),
+            % logger:warning("R3: ~p", [luerl:decode_list(R, State2)]),
     catch 
         error:{lua_error, Reason, _} ->
             throw({lua_error, Reason})

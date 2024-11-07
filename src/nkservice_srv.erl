@@ -185,8 +185,8 @@ handle_call({nkservice_update, UserSpec}, _From, #state{service=Service}=State) 
                         true -> Removed#{lua_state:=<<"...">>};
                         false -> Removed
                     end,
-                    lager:info("Added config: ~p", [Added2]),
-                    lager:info("Removed config: ~p", [Removed2]),
+                    logger:info("Added config: ~p", [Added2]),
+                    logger:info("Removed config: ~p", [Removed2]),
                     % io:format("Updated Service: ~p\n", [Service3]),
                     {reply, ok, State#state{service=Service3}};
                 {error, Error} ->
@@ -242,7 +242,7 @@ terminate(Reason, #state{id=Id, service=Service}=State) ->
     catch nklib_gen_server:terminate(nkservice_terminate, Reason, State, ?P1, ?P2),
     #{name:=Name, plugins:=Plugins} = Service,  
     _Service2 = nkservice_config:stop_plugins(Plugins, Service),
-    lager:debug("Service ~s (~p) has terminated (~p)", [Name, Id, Reason]).
+    logger:debug("Service ~s (~p) has terminated (~p)", [Name, Id, Reason]).
     
 
 

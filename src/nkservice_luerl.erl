@@ -206,7 +206,7 @@ handle_call({kv_get, Key}, _From, #state{srv_id=SrvId, luerl=Luerl}=State) ->
         {ok, undefined} ->
             {reply, {ok, undefined}, State};
         {ok, Val} ->
-            lager:error("Val: ~p", [Val]),
+            logger:error("Val: ~p", [Val]),
             try luerl:decode(Val, Luerl) of
                 ErlVal ->
                     {reply, {ok, ErlVal}, State}
@@ -218,7 +218,7 @@ handle_call({kv_get, Key}, _From, #state{srv_id=SrvId, luerl=Luerl}=State) ->
     end;
 
 handle_call(Msg, _From, State) ->
-    lager:error("Module ~p received unexpected call ~p", [?MODULE, Msg]),
+    logger:error("Module ~p received unexpected call ~p", [?MODULE, Msg]),
     {noreply, State}.
 
 
@@ -227,7 +227,7 @@ handle_call(Msg, _From, State) ->
     {noreply, #state{}} | {stop, term(), #state{}}.
 
 handle_cast(Msg, State) -> 
-    lager:error("Module ~p received unexpected cast ~p", [?MODULE, Msg]),
+    logger:error("Module ~p received unexpected cast ~p", [?MODULE, Msg]),
     {noreply, State}.
 
 
@@ -236,7 +236,7 @@ handle_cast(Msg, State) ->
     {noreply, #state{}} | {stop, term(), #state{}}.
 
 handle_info(Info, State) -> 
-    lager:warning("Module ~p received unexpected info: ~p (~p)", [?MODULE, Info, State]),
+    logger:warning("Module ~p received unexpected info: ~p (~p)", [?MODULE, Info, State]),
     {noreply, State}.
 
 

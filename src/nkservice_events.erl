@@ -57,7 +57,7 @@
     ok | not_found.
 
 send(#event{}=Event) ->
-    % lager:info("EVENT: ~p ~p", [Event, Body]),
+    % logger:info("EVENT: ~p ~p", [Event, Body]),
     #event{
         class = Class, 
         subclass = Sub, 
@@ -206,7 +206,7 @@ start_link(Class, Sub, Type) ->
 init([Class, Sub, Type]) ->
     true = nklib_proc:reg({?MODULE, Class, Sub, Type}),
     nklib_proc:put(?MODULE, {Class, Sub, Type}),
-    lager:info("Starting events for ~p:~p:~p (~p)", [Class, Sub, Type, self()]),
+    logger:info("Starting events for ~p:~p:~p (~p)", [Class, Sub, Type, self()]),
     {ok, #state{class=Class, sub=Sub, type=Type}}.
 
 
@@ -223,7 +223,7 @@ handle_call({call, Sub, Type, SrvId, ObjId, Body}, _From, State) ->
         List ->
             List
     end,
-    % lager:error("Event single: ~p:~p:~p:~p (~p:~p): ~p", 
+    % logger:error("Event single: ~p:~p:~p:~p (~p:~p): ~p", 
     %             [Class, Sub, Type, ObjId, State#state.sub, State#state.type,
     %              PidTerms]),
     case PidTerms of
@@ -240,7 +240,7 @@ handle_call(dump, _From, #state{regs=Regs, pids=Pids}=State) ->
     {reply, {lists:sort(maps:to_list(Regs)), lists:sort(maps:to_list(Pids))}, State};
 
 handle_call(Msg, _From, State) ->
-    lager:error("Module ~p received unexpected call ~p", [?MODULE, Msg]),
+    logger:error("Module ~p received unexpected call ~p", [?MODULE, Msg]),
     {noreply, State}.
 
 
@@ -254,8 +254,8 @@ handle_cast({send, Sub, Type, SrvId, ObjId, Body, PidSpec}, State) ->
     PidTerms1 = maps:get({SrvId, ObjId}, Regs, []),
     PidTerms2 = maps:get({SrvId, '*'}, Regs, []) -- PidTerms1,
     PidTerms3 = maps:get({'*', '*'}, Regs, []) -- PidTerms1 -- PidTerms2,
-    % lager:error("Event all: ~p (~p:~p): ~p,~p,~p", 
-    %             [lager:pr(Event, ?MODULE), State#state.sub, State#state.type,
+    % logger:error("Event all: ~p (~p:~p): ~p,~p,~p", 
+    %             [Event, State#state.sub, State#state.type,
     %             PidTerms1, PidTerms2, PidTerms3]),
     send_events(PidTerms1, Event, Body, PidSpec),
     send_events(PidTerms2, Event, Body, PidSpec),
@@ -275,7 +275,7 @@ handle_cast(remove_all, #state{pids=Pids}=State) ->
     {noreply, State#state{regs=#{}, pids=#{}}};
 
 handle_cast(Msg, State) ->
-    lager:error("Module ~p received unexpected cast ~p", [?MODULE, Msg]),
+    logger:error("Module ~p received unexpected cast ~p", [?MODULE, Msg]),
     {noreply, State}.
 
 
@@ -289,12 +289,12 @@ handle_info({'DOWN', Mon, process, Pid, _Reason}, #state{regs=Regs, pids=Pids}=S
             {Regs2, Pids2} = do_unreg(Keys, Pid, Regs, Pids),
             {noreply, State#state{regs=Regs2, pids=Pids2}};
         error ->
-            lager:warning("Module ~p received unexpected down: ~p", [?MODULE, Pid]),
+            logger:warning("Module ~p received unexpected down: ~p", [?MODULE, Pid]),
             {noreply, State}
     end;
 
 handle_info(Info, State) -> 
-    lager:warning("Module ~p received unexpected info ~p", [?MODULE, Info]),
+    logger:warning("Module ~p received unexpected info ~p", [?MODULE, Info]),
     {noreply, State}.
 
 
@@ -448,8 +448,7 @@ send_events([{Pid, _}|Rest], Event, Body, PidS) when is_pid(PidS), Pid/=PidS ->
     send_events(Rest, Event, Body, PidS);
 
 send_events([{Pid, RegBody}|Rest], #event{}=Event, Body, PidS) ->
-    % lager:info("Sending event ~p to ~p (~p)", 
-    %            [lager:pr(Event, ?MODULE), Pid, Body]),
+    % logger:info("Sending event ~p to ~p (~p)", [Event, Pid, Body]),
     Body2 = case is_map(Body) andalso is_map(RegBody) of
         true -> maps:merge(RegBody, Body);
         false when map_size(Body)==0 -> RegBody;

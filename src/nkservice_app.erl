@@ -68,10 +68,10 @@ start(_Type, _Args) ->
             file:make_dir(get(log_path)),
             {ok, Pid} = nkservice_sup:start_link(),
             {ok, Vsn} = application:get_key(nkservice, vsn),
-            lager:info("NkSERVICE v~s has started.", [Vsn]),
+            logger:info("NkSERVICE v~s has started.", [Vsn]),
             {ok, Pid};
         {error, Error} ->
-            lager:error("Error parsing config: ~p", [Error]),
+            logger:error("Error parsing config: ~p", [Error]),
             error(Error)
     end.
 

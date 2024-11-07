@@ -91,7 +91,7 @@ plugin_syntax() ->
 plugin_start(Config, #{id:=Id, name:=Name}) ->
     case Config of
         #{api_gelf_server:=Server} ->
-            lager:info("Plugin NkSERVICE GELF (~s) starting (~s)", 
+            logger:info("Plugin NkSERVICE GELF (~s) starting (~s)", 
                        [Name, Server]),
             Port = maps:get(api_gelf_port, Config, 12201),
             Opts = #{server=>Server, port=>Port},
@@ -108,7 +108,7 @@ plugin_start(Config, #{id:=Id, name:=Name}) ->
 
 
 plugin_stop(Config, #{id:=Id, name:=Name}) ->
-    lager:info("Plugin NkSERVICE GELF (~s) stopping", [Name]),
+    logger:info("Plugin NkSERVICE GELF (~s) stopping", [Name]),
     nklib_log:stop({?MODULE, Id}),
     {ok, Config}.
 
