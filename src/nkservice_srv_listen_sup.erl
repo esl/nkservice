@@ -129,7 +129,7 @@ add_transport(SrvId, Spec) ->
                 {ok, Pid} ->
                     {registered_name, ListenId} = process_info(Pid, registered_name),
                     {ok, {Proto, Transp, Ip, Port}} = nkpacket:get_local(Pid),
-                    lager:info("Service ~p started listener on ~p:~p:~p (~p)", 
+                    logger:info("Service ~p started listener on ~p:~p:~p (~p)", 
                                [SrvId, Transp, Ip, Port, Proto]),
                     {ok, ListenId};
                 {error, {Error, _}} -> 
@@ -138,7 +138,7 @@ add_transport(SrvId, Spec) ->
                     {error, Error}
             end;
         {true, Pid} ->
-            lager:info("Skipping started transport ~p", [TranspId]),
+            logger:info("Skipping started transport ~p", [TranspId]),
             {registered_name, ListenId} = process_info(Pid, registered_name),
             {ok, ListenId}
     end.

@@ -35,7 +35,7 @@
 
 
 -define(LLOG(Type, Txt, Args, State),
-    lager:Type("NkSERVICE API Server ~s (~s) "++Txt, 
+    logger:Type("NkSERVICE API Server ~s (~s) "++Txt, 
                [State#state.session_id, State#state.user | Args])).
 
 -define(PRINT(Txt, Args, State), 
@@ -358,7 +358,7 @@ conn_parse({text, Text}, NkPort, State) ->
 conn_encode(Msg, _NkPort) when is_map(Msg); is_list(Msg) ->
     case nklib_json:encode(Msg) of
         error ->
-            lager:warning("invalid json in ~p: ~p", [?MODULE, Msg]),
+            logger:warning("invalid json in ~p: ~p", [?MODULE, Msg]),
             {error, invalid_json};
         Json ->
             {ok, {text, Json}}
@@ -833,7 +833,7 @@ extract_op(TId, #state{trans=AllTrans}=State) ->
 %% @private
 extend_op(TId, #trans{timer=Timer}=Trans, #state{trans=AllTrans}=State) ->
     nklib_util:cancel_timer(Timer),
-    lager:warning("NEW TIME: ~p", [1000*?ACK_TIME]),
+    logger:warning("NEW TIME: ~p", [1000*?ACK_TIME]),
 
     Timer2 = erlang:start_timer(1000*?ACK_TIME, self(), {nkservice_op_timeout, TId}),
     Trans2 = Trans#trans{timer=Timer2},

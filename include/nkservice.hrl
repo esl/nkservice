@@ -9,9 +9,9 @@
 %     DO_LOG(Level, App, CtxId, Text, Opts),
 %     case CtxId of
 %         <<>> ->
-%             lager:Level([{app, App}], "~p "++Text, [App|Opts]);
-%         _ -> 
-%             lager:Level([{app, App}, {ctx_id, CtxId}], "~p (~s) "++Text, [App, CtxId|Opts])
+%             logger:Level("~p "++Text, [App|Opts]);
+%         _ ->
+%             logger:Level("~p (~s) "++Text, [App, CtxId|Opts])
 %     end).
 
 % -define(DO_DEBUG(SrvMod, CtxId, Level, Text, List),

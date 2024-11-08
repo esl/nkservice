@@ -60,8 +60,8 @@ cleanplt:
 	#export ERL_FLAGS="-config test/app.config -args_file test/vm.args"; \
 
 build_tests:
-	erlc -pa ebin -pa deps/lager/ebin -o ebin -I include -pa deps/nklib \
-	+export_all +debug_info +"{parse_transform, lager_transform}" \
+	erlc -pa ebin -o ebin -I include -pa deps/nklib \
+	+export_all +debug_info \
 	test/*.erl
 
 

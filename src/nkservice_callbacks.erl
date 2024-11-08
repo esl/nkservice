@@ -295,7 +295,7 @@ api_server_reg_down(_Link, _Reason, State) ->
 	{ok, state()} | continue().
 
 api_server_handle_call(Msg, _From, State) ->
-    lager:error("Module nkservice_api_server received unexpected call ~p", [Msg]),
+    logger:error("Module nkservice_api_server received unexpected call ~p", [Msg]),
     {ok, State}.
 
 
@@ -304,7 +304,7 @@ api_server_handle_call(Msg, _From, State) ->
 	{ok, state()} | continue().
 
 api_server_handle_cast(Msg, State) ->
-    lager:error("Module nkservice_api_server received unexpected cast ~p", [Msg]),
+    logger:error("Module nkservice_api_server received unexpected cast ~p", [Msg]),
 	{ok, State}.
 
 
@@ -318,7 +318,7 @@ api_server_handle_cast(Msg, State) ->
 % 	{ok, State2};
 
 api_server_handle_info(Msg, State) ->
-    lager:notice("Module nkservice_api_server received unexpected info ~p", [Msg]),
+    logger:notice("Module nkservice_api_server received unexpected info ~p", [Msg]),
 	{ok, State}.
 
 
@@ -406,7 +406,7 @@ service_init(_Service, State) ->
 	{reply, term(), state()} | {noreply, state()} | continue().
 
 service_handle_call(Msg, _From, State) ->
-    lager:error("Module nkservice_srv received unexpected call ~p", [Msg]),
+    logger:error("Module nkservice_srv received unexpected call ~p", [Msg]),
     {noreply, State}.
 
 
@@ -415,7 +415,7 @@ service_handle_call(Msg, _From, State) ->
 	{noreply, state()} | continue().
 
 service_handle_cast(Msg, State) ->
-    lager:error("Module nkservice_srv received unexpected cast ~p", [Msg]),
+    logger:error("Module nkservice_srv received unexpected cast ~p", [Msg]),
 	{noreply, State}.
 
 
@@ -424,7 +424,7 @@ service_handle_cast(Msg, State) ->
 	{noreply, state()} | continue().
 
 service_handle_info(Msg, State) ->
-    lager:notice("Module nkservice_srv received unexpected info ~p", [Msg]),
+    logger:notice("Module nkservice_srv received unexpected info ~p", [Msg]),
 	{noreply, State}.
 
 

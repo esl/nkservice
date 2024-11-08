@@ -176,8 +176,8 @@ handle_call({call, Fun, Args}, _From, #state{luerl=Luerl}=State) ->
         {Val, Luerl2} ->
             {reply, {ok, Val}, State#state{luerl=Luerl2}}
     catch
-        Class:Error ->
-            Reply = {error, {Class, {Error, erlang:get_stacktrace()}}},
+        Class:Error:Stacktrace ->
+            Reply = {error, {Class, {Error, Stacktrace}}},
             {reply, Reply, State}
     end;
 
@@ -186,8 +186,8 @@ handle_call({get_table, Name}, _From, #state{luerl=Luerl}=State) ->
         {Val, _} ->
             {reply, {ok, Val}, State}
     catch
-        Class:Error ->
-            Reply = {error, {Class, {Error, erlang:get_stacktrace()}}},
+        Class:Error:Stacktrace ->
+            Reply = {error, {Class, {Error, Stacktrace}}},
             {reply, Reply, State}
     end;
 
@@ -196,8 +196,8 @@ handle_call({set_table, Name, Value}, _From, #state{luerl=Luerl}=State) ->
         Luerl2 ->
             {reply, ok, State#state{luerl=Luerl2}}
     catch
-        Class:Error ->
-            Reply = {error, {Class, {Error, erlang:get_stacktrace()}}},
+        Class:Error:Stacktrace ->
+            Reply = {error, {Class, {Error, Stacktrace}}},
             {reply, Reply, State}
     end;
 
@@ -206,19 +206,19 @@ handle_call({kv_get, Key}, _From, #state{srv_id=SrvId, luerl=Luerl}=State) ->
         {ok, undefined} ->
             {reply, {ok, undefined}, State};
         {ok, Val} ->
-            lager:error("Val: ~p", [Val]),
+            logger:error("Val: ~p", [Val]),
             try luerl:decode(Val, Luerl) of
                 ErlVal ->
                     {reply, {ok, ErlVal}, State}
             catch
-                Class:Error ->
-                    Reply = {error, {Class, {Error, erlang:get_stacktrace()}}},
+                Class:Error:Stacktrace ->
+                    Reply = {error, {Class, {Error, Stacktrace}}},
                     {reply, Reply, State}
             end
     end;
 
 handle_call(Msg, _From, State) ->
-    lager:error("Module ~p received unexpected call ~p", [?MODULE, Msg]),
+    logger:error("Module ~p received unexpected call ~p", [?MODULE, Msg]),
     {noreply, State}.
 
 
@@ -227,7 +227,7 @@ handle_call(Msg, _From, State) ->
     {noreply, #state{}} | {stop, term(), #state{}}.
 
 handle_cast(Msg, State) -> 
-    lager:error("Module ~p received unexpected cast ~p", [?MODULE, Msg]),
+    logger:error("Module ~p received unexpected cast ~p", [?MODULE, Msg]),
     {noreply, State}.
 
 
@@ -236,7 +236,7 @@ handle_cast(Msg, State) ->
     {noreply, #state{}} | {stop, term(), #state{}}.
 
 handle_info(Info, State) -> 
-    lager:warning("Module ~p received unexpected info: ~p (~p)", [?MODULE, Info, State]),
+    logger:warning("Module ~p received unexpected info: ~p (~p)", [?MODULE, Info, State]),
     {noreply, State}.
 
 
